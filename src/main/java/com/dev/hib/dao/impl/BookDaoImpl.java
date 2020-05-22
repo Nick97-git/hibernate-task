@@ -24,7 +24,7 @@ public class BookDaoImpl implements BookDao {
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            session.persist(book);
+            session.save(book);
             transaction.commit();
             return book;
         } catch (Exception e) {

@@ -1,7 +1,6 @@
 package com.dev.hib.model;
 
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,9 +17,9 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Genre genre;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Author> authors;
 
     public Long getId() {
