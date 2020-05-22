@@ -15,8 +15,8 @@ public class BookServiceImpl implements BookService {
     private BookDao bookDao;
 
     @Override
-    public void create(Book book) {
-        bookDao.create(book);
+    public Book create(Book book) {
+        return bookDao.create(book);
     }
 
     @Override

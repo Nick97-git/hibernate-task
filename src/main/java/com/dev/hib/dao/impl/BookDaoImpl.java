@@ -18,7 +18,7 @@ import org.hibernate.Transaction;
 public class BookDaoImpl implements BookDao {
 
     @Override
-    public void create(Book book) {
+    public Book create(Book book) {
         Session session = null;
         Transaction transaction = null;
         try {
@@ -26,6 +26,7 @@ public class BookDaoImpl implements BookDao {
             transaction = session.beginTransaction();
             session.persist(book);
             transaction.commit();
+            return book;
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

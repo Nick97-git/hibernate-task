@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface BookService {
 
-    void create(Book book);
+    Book create(Book book);
 
     Book getBookByTitle(Book book);
 
