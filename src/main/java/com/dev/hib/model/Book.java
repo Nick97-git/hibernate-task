@@ -17,9 +17,9 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Genre genre;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     private List<Author> authors;
 
     public Long getId() {

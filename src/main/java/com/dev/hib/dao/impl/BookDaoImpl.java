@@ -7,12 +7,9 @@ import com.dev.hib.model.Book;
 import com.dev.hib.model.Genre;
 import com.dev.hib.util.HibernateUtil;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 @Dao
 public class BookDaoImpl implements BookDao {
@@ -42,13 +39,12 @@ public class BookDaoImpl implements BookDao {
     @Override
     public Book getBookByTitle(Book book) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Book> criteriaQuery = criteriaBuilder
-                    .createQuery(Book.class);
-            Root<Book> root = criteriaQuery.from(Book.class);
-            Predicate predicateTitle = criteriaBuilder.equal(root.get("title"), book.getTitle());
-            criteriaQuery.where(predicateTitle);
-            return session.createQuery(criteriaQuery).uniqueResult();
+            Query<Book> query =
+                    session.createQuery("from Book b "
+                            + "join fetch b.genre Genre "
+                            + "join fetch b.authors Author where b.title =: title", Book.class);
+            query.setParameter("title", book.getTitle());
+            return query.uniqueResult();
         } catch (Exception e) {
             throw new RuntimeException("Can't get book with title " + book.getTitle(), e);
         }
@@ -57,28 +53,27 @@ public class BookDaoImpl implements BookDao {
     @Override
     public List<Book> getBooksByAuthor(Author author) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Book> criteriaQuery = criteriaBuilder
-                    .createQuery(Book.class);
-            Root<Book> root = criteriaQuery.from(Book.class);
-            Predicate predicateTitle = criteriaBuilder.isMember(author, root.get("authors"));
-            criteriaQuery.where(predicateTitle);
-            return session.createQuery(criteriaQuery).list();
+            Query<Book> query =
+                    session.createQuery("from Book b "
+                            + "join fetch b.genre Genre "
+                            + "join fetch b.authors Author "
+                            + "where :author member b.authors", Book.class);
+            query.setParameter("author", author);
+            return query.list();
         } catch (Exception e) {
-            throw new RuntimeException("Can't get book by genre " + author.getName(), e);
+            throw new RuntimeException("Can't get book by author " + author.getName(), e);
         }
     }
 
     @Override
     public List<Book> getBooksByGenre(Genre genre) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Book> criteriaQuery = criteriaBuilder
-                    .createQuery(Book.class);
-            Root<Book> root = criteriaQuery.from(Book.class);
-            Predicate predicateTitle = criteriaBuilder.equal(root.get("genre"), genre);
-            criteriaQuery.where(predicateTitle);
-            return session.createQuery(criteriaQuery).list();
+            Query<Book> query =
+                    session.createQuery("from Book b "
+                            + "join fetch b.genre Genre "
+                            + "join fetch b.authors Author where b.genre =: genre", Book.class);
+            query.setParameter("genre", genre);
+            return query.list();
         } catch (Exception e) {
             throw new RuntimeException("Can't get book by genre " + genre.getName(), e);
         }
